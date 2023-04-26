@@ -8,6 +8,9 @@
 using namespace std;
 
 int main(void) {
+
+	const short BUFF_SIZE = 1024;
+
 	//Инициализация соккетных интерфейсов
 	WSADATA wsData;
 
@@ -35,7 +38,7 @@ int main(void) {
 
 	//Привязка сокета к паре IP/порт
 	in_addr ip_to_num;
-	erStat = inet_pton(AF_INET, "10.193.3.127", &ip_to_num);
+	erStat = inet_pton(AF_INET, "127.0.0.1", &ip_to_num);
 	if (erStat <= 0) {
 		cout << "Error in IP translation to special numeric format" << endl;
 		return 1;
@@ -89,6 +92,39 @@ int main(void) {
 	}
 	else
 		cout << "Connection to a client established successfully" << endl;
+
+	//Передача данных
+
+	vector <char> servBuff(BUFF_SIZE);
+	short packet_size = 0;
+
+	while (true) {
+		packet_size = recv(ClientConn, servBuff.data(), servBuff.size(), 0);
+		cout << "Client's message: " << servBuff.data() << endl;
+
+
+		// Check whether server would like to stop chatting 
+		if (servBuff[0] == 'x' && servBuff[1] == 'x') {
+			shutdown(ClientConn, SD_BOTH);
+			closesocket(ServSock);
+			closesocket(ClientConn);
+			WSACleanup();
+			return 0;
+		}
+
+		//packet_size = send(ClientConn, clientBuff.data(), clientBuff.size(), 0);
+
+		if (packet_size == SOCKET_ERROR) {
+			cout << "Can't send message to Client. Error # " << WSAGetLastError() << endl;
+			closesocket(ServSock);
+			closesocket(ClientConn);
+			WSACleanup();
+			return 1;
+		}
+
+
+	
+	}
 
 
 
