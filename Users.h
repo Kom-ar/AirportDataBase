@@ -1,30 +1,100 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-
+#include <vector>
+#include "Ticket.h"
 using namespace std;
 
 #pragma once
-class Users{
-private:
+class User{
+public:
 	string login;
 	string password;
 	string first_name;
 	string last_name;
 	string passport_number;
-	string is_admin;
-	int balance;
+	short is_admin;
+	vector<Ticket> my_tickets;
+};
+
+
+class UserDao {
 
 public:
-	int log_in(string log, string pass_w);
-	int registration(string log, string passw, string first_name, string last_name, string passport_number);
-	string get_login();
-	string get_password();
-	void set_login(string new_login);
-	void set_password(string new_password);
-	int change_login(string new_login);
-	int change_password(string new_password);
-
+	User getUserByLogin(string login);
+	void addUser(User user);
+	void deleteUser(User user);
+	void updateUser(User user);
 
 };
+
+class Check {
+public:
+	int login(string login);
+	int password(string password);
+	int name(string name);
+	int passport_number(string passport_number);
+};
+
+class RegistrationUseCase {
+private:
+	UserDao userDao;
+public:
+	RegistrationUseCase(UserDao userDao) {
+		this->userDao = userDao;
+	}
+
+	int execute(string login, string password, string first_name, string last_name, string passport_number) {
+		User user;
+		Check check;
+		if (check.login(login)) { user.login = login; }
+		if (check.password(password)) { user.password = password; }
+		if (check.name(first_name)) { user.first_name = first_name; }
+		if (check.name(last_name)) { user.last_name = last_name; }
+		if (check.passport_number(passport_number)) { user.passport_number = passport_number; }
+		user.is_admin = 0;
+		userDao.addUser(user);
+	}
+};
+
+class LogInUseCase {
+private:
+	UserDao userDao;
+public:
+	LogInUseCase(UserDao userDao) {
+		this->userDao = userDao;
+	}
+
+	User execute(string login, string password) {
+		User user;
+		user = userDao.getUserByLogin(login);
+		if (user.password == password) {
+			return user;
+		}
+		return;
+		
+		
+	}
+};
+
+class ChangePasswordUseCase {
+
+private:
+	UserDao userDao;
+
+public :
+	ChangePasswordUseCase(UserDao userDao) {
+		this->userDao = userDao;
+
+	}
+
+	void execute(User user, string newPassword) {
+		
+		user.password = newPassword;
+
+		userDao.updateUser(user);
+
+	}
+};
+
 

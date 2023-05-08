@@ -128,11 +128,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AirportDataBase.cpp" />
-    <ClCompile Include="User.cpp" />
+    <ClCompile Include="Flight.cpp" />
     <ClCompile Include="Users.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Flight.h" />
     <ClInclude Include="Users.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Users.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
